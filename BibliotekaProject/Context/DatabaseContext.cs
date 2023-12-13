@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BibliotekaProject.Context;
 
-class DatabaseContext : DbContext
+public class DatabaseContext : DbContext
 {
     public DbSet<Author> Authors { get; set; }
     public DbSet<Genre> Genres { get; set; }
     public DbSet<Position> Positions { get; set; }
     public DbSet<Book> Books { get; set; }
 
-    protected DatabaseContext()
+    public DatabaseContext()
     {
     }
 
