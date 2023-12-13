@@ -1,5 +1,5 @@
-namespace BibliotekaProject.Entities;
 using BibliotekaProject.Entities.Base;
+namespace BibliotekaProject.Entities;
 
 public class Author : BaseEntity
 {
