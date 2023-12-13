@@ -45,7 +45,7 @@ public class GenreController : Controller
 
     [HttpPost]
     [Route("{id:int}")]
-    public async Task<IActionResult> DeleteAuthor(int id, UpdateGenreDTO dto)
+    public async Task<IActionResult> UpdateGenre(int id, UpdateGenreDTO dto)
     {
         var genre = await _dbContext.Genres.FindAsync(id);
         if(genre is not null)

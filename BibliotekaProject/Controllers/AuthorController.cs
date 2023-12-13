@@ -47,7 +47,7 @@ public class AuthorController : Controller
 
     [HttpPost]
     [Route("{id:int}")]
-    public async Task<IActionResult> DeleteAuthor(int id, UpdateAuthorDTO dto)
+    public async Task<IActionResult> UpdateAuthor(int id, UpdateAuthorDTO dto)
     {
         var author = await _dbContext.Authors.FindAsync(id);
         if(author is not null)
