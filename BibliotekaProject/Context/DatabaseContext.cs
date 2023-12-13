@@ -11,6 +11,9 @@ public class DatabaseContext : DbContext
     public DbSet<Genre> Genres { get; set; }
     public DbSet<Position> Positions { get; set; }
     public DbSet<Book> Books { get; set; }
+    public DbSet<Client> Clients { get; set; }
+    public DbSet<StatusHistory> StatusHistories { get; set; }
+
 
     public DatabaseContext()
     {
@@ -25,6 +28,7 @@ public class DatabaseContext : DbContext
 	{
 		builder.ApplyConfiguration(new PositionConfiguration());
 		builder.ApplyConfiguration(new BookConfiguration());
+        builder.ApplyConfiguration(new StatusHistoryConfiguration());
 
 		base.OnModelCreating(builder);
 
@@ -32,6 +36,8 @@ public class DatabaseContext : DbContext
         builder.Entity<Genre>().ToTable("Genres");
         builder.Entity<Position>().ToTable("Positions");
         builder.Entity<Book>().ToTable("Books");
+        builder.Entity<Client>().ToTable("Clients");
+        builder.Entity<StatusHistory>().ToTable("StatusHistories");
 
     }
 }

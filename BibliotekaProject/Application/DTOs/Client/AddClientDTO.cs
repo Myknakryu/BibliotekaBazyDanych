@@ -3,11 +3,10 @@ using BibliotekaProject.Entities.Enums;
 
 namespace BibliotekaProject.Application.DTOs.Book;
 
-public class UpdateBookDTO
+public class AddClientDTO
 {
     [Required]
-    public int IdPosition {get; set;}
+    public string Name {get; set;}
     [Required]
-    public WearoutStatusEnum WearoutStatus {get;set;}
-    public StatusEnum CurrentStatus {get; set;}
+    public string LastName {get;set;}
 }
