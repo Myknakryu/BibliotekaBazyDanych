@@ -87,6 +87,81 @@ public class BookController : Controller
         return Ok();
     }
 
+    [HttpPost]
+    [Route("{id:int}/return")]
+    public async Task<IActionResult> ReturnBook(int id)
+    {
+        using(var transaction = _dbContext.Database.BeginTransaction()){
+            try
+            {
+                var book = _dbContext.Books.Where(b => b.Id == id ).FirstOrDefault();
+                if(book is not null)
+                {
+                    book.CurrentStatus = StatusEnum.InLibrary;
+                    _dbContext.SaveChanges();
+                    var lastBookStatus = _dbContext.StatusHistories.Where(b=>b.IdBook == book.Id).OrderByDescending(b=>b.Id).FirstOrDefault();
+                    if(lastBookStatus is null)
+                    {
+                        throw new Exception("No book history found");
+                    }
+
+                    var client = _dbContext.Clients.Where(u => u.Id == lastBookStatus.IdClient).FirstOrDefault();
+                    if(client is not null)
+                    {
+                        client.HasBorrowedBook = false;
+                        _dbContext.SaveChanges();
+                        StatusHistory statusHistory = new StatusHistory()
+                        {
+                            IdBook = book.Id,
+                            IdClient = client.Id,
+                            StatusChange = StatusEnum.InLibrary
+                        };
+                        _dbContext.StatusHistories.Add(statusHistory);
+                        _dbContext.SaveChanges();
+
+                    }
+                    else
+                    {
+                            throw new Exception("No such user");
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("Error when fetching Book ");
+                }
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return BadRequest();
+            }
+        }
+        return Ok();
+    }
+
+    [HttpGet]
+    [Route("LastUsers")]
+    public IActionResult GetAllBooksLastUser()
+{
+    var query = @"
+        SELECT b.Id, b.CurrentStatus, b.WearoutStatus, p.Name, p.ISBN, 
+        sh.IdClient, CONCAT(c.Name, ' ', c.LastName) AS 'FullName' FROM Books b
+        INNER JOIN Positions p ON b.IdPosition = p.Id
+        LEFT OUTER JOIN (
+            SELECT IdBook, MAX(Id) as MaxId
+            FROM StatusHistories GROUP BY IdBook
+        ) as LatestSH ON LatestSH.IdBook = b.Id
+        LEFT OUTER JOIN StatusHistories sh on sh.Id = LatestSH.MaxId
+        LEFT OUTER JOIN Clients c on sh.IdClient = c.Id";
+
+    var booksLastUsers = _dbContext.Database.SqlQueryRaw<BookLastUserDTO>(query).ToList();
+
+    return Ok(booksLastUsers);
+    }
+
+
     [HttpGet]
     public IActionResult GetBooks()
     {
